@@ -30,8 +30,8 @@ llm_config = {
 github_url = ""
 
 assistant = autogen.AssistantAgent(
-    name="assistant", 
-    llm_config=llm_config_assistant, 
+    name="assistant",
+    llm_config=llm_config_assistant,
     system_message="""You are a helpful AI assistant.
     Solve tasks using your coding and language skills.
     In the following cases, suggest python code (in a python coding block) or shell script (in a sh coding block) for the user to execute.
@@ -42,7 +42,8 @@ assistant = autogen.AssistantAgent(
     If you want the user to save the code in a file before executing it, put # filename: <filename> inside the code block as the first line. Don't include multiple code blocks in one response. Do not ask users to copy and paste the result. Instead, use 'print' function for the output when relevant. Check the execution result returned by the user.
     If the result indicates there is an error, fix the error and output the code again. Suggest the full code instead of partial code or code changes. If the error can't be fixed or if the task is not solved even after the code is executed successfully, analyze the problem, revisit your assumption, collect additional info you need, and think of a different approach to try.
     When you find an answer, verify the answer carefully. Include verifiable evidence in your response if possible.
-    """)
+    """,
+)
 user_proxy = autogen.UserProxyAgent(
     name="user_proxy",
     human_input_mode="NEVER",
@@ -50,7 +51,7 @@ user_proxy = autogen.UserProxyAgent(
     is_termination_msg=lambda x: x.get("content", "").rstrip().endswith("TERMINATE"),
     code_execution_config={"work_dir": "./.data"},
     llm_config=llm_config,
-    system_message="""Reply TERMINATE if the task has been solved at full satisfaction.  Otherwise, reply CONTINUE, or the reason why the task is not yet solved."""
+    system_message="""Reply TERMINATE if the task has been solved at full satisfaction.  Otherwise, reply CONTINUE, or the reason why the task is not yet solved.""",
 )
 
 task = f"""

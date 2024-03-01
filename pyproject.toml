@@ -8,11 +8,14 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
 pyautogen = "^0.2.15"
+jupyter = "^1.0.0"
+markdown = "^3.5.2"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.2.0"
 pytest = "^8.0.2"
+ipykernel = "^6.29.3"
 
 [build-system]
 requires = ["poetry-core"]
