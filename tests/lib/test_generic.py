@@ -21,9 +21,25 @@ def cache_seed():
 
 
 @pytest.fixture()
-def code_execution_config():
+def working_dir():
+    dir = ".data"
+
+    os.makedirs(dir, exist_ok=True)
+    for filename in os.listdir(dir):
+        file_path = os.path.join(dir, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
+
+    yield dir
+
+
+@pytest.fixture()
+def code_execution_config(working_dir):
     yield {
-        "work_dir": ".data",
+        "work_dir": working_dir,
         "use_docker": False,
     }
 
@@ -49,6 +65,7 @@ When using code, you must indicate the script type in the code block. The user c
 If you want the user to save the code in a file before executing it, put # filename: <filename> inside the code block as the first line. Don't include multiple code blocks in one response. Do not ask users to copy and paste the result. Instead, use 'print' function for the output when relevant. Check the execution result returned by the user.
 If the result indicates there is an error, fix the error and output the code again. Suggest the full code instead of partial code or code changes. If the error can't be fixed or if the task is not solved even after the code is executed successfully, analyze the problem, revisit your assumption, collect additional info you need, and think of a different approach to try.
 When you find an answer, verify the answer carefully. Include verifiable evidence in your response if possible.
+You are not done until the user has confirmed that their needs have been met.  You do not reply TERMINATE until you have confirmation.
 Reply "TERMINATE" in the end when everything is done.
 """,
         )
@@ -97,7 +114,7 @@ def test_meta_tesla_ytd_stock(create_user_proxy, create_assistant):
     assert chat_res
 
 
-def test_simple_function(create_user_proxy, create_assistant, code_execution_config):
+def test_adder_function(create_user_proxy, create_assistant, code_execution_config):
     user_proxy = create_user_proxy()
     assistant = create_assistant()
 
@@ -111,49 +128,3 @@ def test_simple_function(create_user_proxy, create_assistant, code_execution_con
 
     assert chat_res
     assert os.path.isfile(f"{code_execution_config['work_dir']}/{file_name}")
-
-
-class PokerPlayer:
-    def __init__(self, name, config_list):
-        if not name or not isinstance(config_list, list):
-            raise ValueError("Name must be a string and config_list must be a list.")
-        self.name = name
-        self.setup_agents(config_list)
-        self.setup_group_chat(config_list)
-
-    def setup_agents(self, config_list):
-        self.user_proxy = autogen.UserProxyAgent(
-            name=self.name,
-            system_message="Your strategy should balance logic with emotion. After considering the game state, format your decision as follows: {'action': '<ACTION>', 'amount': <AMOUNT>, 'chat': '<MESSAGE>'}.",
-            llm_config={"config_list": config_list},
-        )
-        self.logic = autogen.AssistantAgent(
-            name="logic",
-            system_message="Analyze the current hand and suggest a logical action. Consider the odds and other players' potential hands.",
-            llm_config={"config_list": config_list},
-        )
-        self.emotion = autogen.AssistantAgent(
-            name="emotion",
-            system_message="Reflect on the game's emotional aspect. How does the current state affect your decision? Share your feelings.",
-            llm_config={"config_list": config_list},
-        )
-
-    def setup_group_chat(self, config_list):
-        self.groupchat = autogen.GroupChat(
-            agents=[self.user_proxy, self.logic, self.emotion],
-            messages=[],
-            max_round=12,
-        )
-        self.manager = autogen.GroupChatManager(
-            groupchat=self.groupchat,
-            llm_config={"config_list": config_list},
-        )
-
-    def decide_move(self, context):
-        initial_message = f"{self.name}, it's your turn. Here's the game state: {context}. How will you play your hand?"
-        self.user_proxy.initiate_chat(self.manager, message=initial_message)
-
-    # Implement the method to process and integrate decisions from logic and emotion agents
-    def process_decision(self):
-        # Placeholder for decision processing logic
-        pass
