@@ -46,7 +46,7 @@ def code_execution_config(working_dir):
 
 @pytest.fixture()
 def create_assistant(config_list, cache_seed):
-    def _create_assistant(temperature=0.2, timeout=300):
+    def _create_assistant(temperature=0, timeout=300):
         return autogen.AssistantAgent(
             name="assistant",
             llm_config={
@@ -66,7 +66,7 @@ If you want the user to save the code in a file before executing it, put # filen
 If the result indicates there is an error, fix the error and output the code again. Suggest the full code instead of partial code or code changes. If the error can't be fixed or if the task is not solved even after the code is executed successfully, analyze the problem, revisit your assumption, collect additional info you need, and think of a different approach to try.
 When you find an answer, verify the answer carefully. Include verifiable evidence in your response if possible.
 You are not done until the user has confirmed that their needs have been met.  You do not reply TERMINATE until you have confirmation.
-Reply "TERMINATE" in the end when everything is done.
+Reply "TERMINATE" once the user has confirmed that their needs have been met.
 """,
         )
 
