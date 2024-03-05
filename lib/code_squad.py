@@ -79,6 +79,7 @@ class CodeSquad:
 6. **Closure and Termination Protocol:**
    - Upon fulfilling all task requirements and achieving team consensus on completion, formally conclude the collaboration with a "TERMINATE" response.
    - The "TERMINATE" command serves as an official acknowledgment that the task has been successfully completed to the satisfaction of all parties involved.
+   - The user does not issue the "TERMINATE" command.  The assistant does, but only after confirming that the user is satisfied.
 
 **Conclusion:**
 By following these guidelines, you not only contribute quality code but also reinforce a culture of collaboration, communication, and continuous learning within your team. These practices ensure a productive, efficient, and supportive development environment.
