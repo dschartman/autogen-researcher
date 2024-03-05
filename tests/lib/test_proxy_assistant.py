@@ -40,7 +40,7 @@ def working_dir():
 def code_execution_config(working_dir):
     yield {
         "work_dir": working_dir,
-        "use_docker": False,
+        "use_docker": False,  # running code in a devcontainer
     }
 
 
@@ -128,3 +128,21 @@ def test_adder_function(create_user_proxy, create_assistant, code_execution_conf
 
     assert chat_res
     assert os.path.isfile(f"{code_execution_config['work_dir']}/{file_name}")
+
+
+def test_adder_test_function(
+    create_user_proxy, create_assistant, code_execution_config
+):
+    user_proxy = create_user_proxy()
+    assistant = create_assistant()
+
+    file_name = "adder.py"
+
+    chat_res = user_proxy.initiate_chat(
+        assistant,
+        message=f"""create a test suite for a python function that adds two numbers.  Tests should be written in pytest.  These tests should have comprehensive coverage.  Write this function to a file called test_{file_name}""",
+        summary_method="reflection_with_llm",
+    )
+
+    assert chat_res
+    assert os.path.isfile(f"{code_execution_config['work_dir']}/test_{file_name}")
