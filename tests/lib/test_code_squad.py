@@ -13,5 +13,5 @@ def test_init(code_squad):
 
 def test_code_challenge(code_squad):
     code_squad.execute_task(
-        "create a python function that adds two numbers.  Make sure you work in a new git branch and that the function is well tested.  Check in your changes when finished."
+        "create a python function that adds two numbers.  assume this is a local git repo."
     )
